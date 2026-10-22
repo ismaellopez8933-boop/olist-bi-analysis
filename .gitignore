@@ -1,0 +1,23 @@
+# Archivos de datos crudos y datasets pesados (Olist)
+*.csv
+*.zip
+*.tar.gz
+data/
+datasets/
+
+# Respaldos de base de datos masivos
+*.dump
+olist_full_backup.sql
+
+# Archivos temporales y de bloqueo de Power BI
+*.tmp
+~$*.pbix
+*.pbit.backup
+
+# Archivos de credenciales y entornos locales
+.env
+pgpass.conf
+
+# Archivos basura del sistema operativo
+.DS_Store
+Thumbs.db
