@@ -44,29 +44,24 @@ Se creó una vista analítica optimizada (`vw_entregas`) que consolida únicamen
 ```sql
 DROP VIEW IF EXISTS vw_entregas CASCADE;
 
-CREATE VIEW vw_entregas AS (
-    SELECT 
-        c.customer_id,
-        c.customer_city,
-        c.customer_state,
-        o.order_status,
-        o.order_purchase_timestamp,
-        o.order_delivered_carrier_date,
-        o.order_estimated_delivery_date,
-        o.order_delivered_customer_date,
-        -- Diferencia en días entre la entrega real y la fecha estimada
-        (o.order_delivered_customer_date::date - o.order_estimated_delivery_date::date) AS real_delivery,
-        -- Clasificación del SLA
-        CASE
-            WHEN o.order_delivered_customer_date::date > o.order_estimated_delivery_date::date THEN 'Retrasado'
-            ELSE 'A tiempo'
-        END AS status
-    FROM customer c 
-    JOIN orders o ON c.customer_id = o.customer_id
-    WHERE o.order_status = 'delivered'
-      AND o.order_delivered_carrier_date IS NOT NULL
-      AND o.order_delivered_customer_date IS NOT NULL
-);
+create or replace view vw_entregas as (
+    select c.customer_id,
+           c.customer_city,
+           c.customer_state,
+           o.order_status,
+           o.order_purchase_timestamp,
+           o.order_delivered_carrier_date,
+           o.order_estimated_delivery_date,
+           o.order_delivered_customer_date,
+           (o.order_delivered_customer_date::date - o.order_estimated_delivery_date::date) as real_delivery,
+           case
+               when o.order_delivered_customer_date::date > o.order_estimated_delivery_date::date then 'Retrasado'
+    else 'A tiempo' end as status
+        from customer c join orders o on c.customer_id = o.customer_id
+            where o.order_status = 'delivered'
+              and o.order_delivered_carrier_date is not null
+              and o.order_delivered_customer_date is not null
+    );
 ```
 
 ---
@@ -129,7 +124,7 @@ Se diseñaron medidas explícitas para evitar sesgos de columnas numéricas impl
 
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/olist-logistics-powerbi.git
+   git clone https://github.com/ismaellopez8933-boop/olist-bi-analysis.git
    ```
 2. Cargar los datos CSV de Olist en PostgreSQL ejecutando los scripts de esquema y la vista `vw_entregas`.
 3. Abrir el archivo `.pbix` en Power BI Desktop.
